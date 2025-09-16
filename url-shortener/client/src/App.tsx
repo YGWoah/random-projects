@@ -1,64 +1,96 @@
-import axios from "axios"
-import React from "react"
-
-
+import axios from "axios";
+import React from "react";
 
 export default function App() {
-  const [url, setUrl] = React.useState("")
-  const [shortenedUrl, setShortenedUrl] = React.useState("")
-  const [completed, setCompleted] = React.useState(false)
-  const [loading, setLoading] = React.useState(false)
+  const [url, setUrl] = React.useState("");
+  const [shortenedUrl, setShortenedUrl] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
 
   const shortenUrl = async () => {
-    setLoading(true)
-    axios.get('/todos/1').then(res => console.log(res));
+    if (!url) {
+      setError("Please enter a URL.");
+      return;
+    }
+    setError("");
+    setLoading(true);
+    setShortenedUrl("");
 
-    axios.post('/api/generate', {
-      url: url
-    }).then((res) => {
+    try {
+      const response = await axios.post("/api/generate", { url });
+      setShortenedUrl(`http://localhost:3000/api/${response.data.id}`);
+    } catch (err) {
+      setError("Failed to shorten URL. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      setShortenedUrl("http://localhost:3000/api/" + String(res.data.id))
-    })
-  }
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(shortenedUrl);
+    // Optional: Add a notification that text has been copied, e.g., using a toast library.
+  };
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100">
-
-      <h1 className="text-3xl font-bold underline">
-        Welcome to url shortener app!
-      </h1>
-      <p className="mt-4 text-lg text-gray-700">
-        This is a simple URL shortener application built with React and Tailwind CSS.
-      </p>
-      {shortenedUrl && (
-        <div className="mt-4 p-4 bg-white rounded-lg shadow-md">
-          <p className="text-green-500">Shortened URL:</p>
-          <a href={shortenedUrl} className="text-blue-500 hover:underline">
-            {shortenedUrl}
-          </a>
-          <button onClick={async () => {
-            await navigator.clipboard.writeText(shortenedUrl);
-          }}>
-            copy to keyboard
-          </button>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 font-sans">
+      <div className="w-full max-w-lg p-8 space-y-6 bg-white rounded-xl shadow-lg">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-gray-800">URL Shortener</h1>
+          <p className="mt-2 text-gray-600">
+            Create short and easy-to-share links
+          </p>
         </div>
-      )}{!shortenedUrl && (
-        <div className="mt-6">
+
+        <div className="flex flex-col space-y-4">
           <input
             onChange={(e) => setUrl(e.target.value)}
-            type="text"
-            placeholder="Enter URL to shorten"
-            className="border border-gray-300 p-2 rounded-lg"
+            type="url"
+            placeholder="https://example.com"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-shadow"
+            disabled={loading}
           />
-          <button className="ml-2 bg-blue-500 text-white p-2 rounded-lg" onClick={shortenUrl} >
-            Shorten URL
+          <button
+            className="w-full px-4 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 transition-colors"
+            onClick={shortenUrl}
+            disabled={loading}
+          >
+            {loading ? "Shortening..." : "Shorten URL"}
           </button>
-        </div>)}
-      <a
-        className="mt-6 text-blue-500 hover:underline"
-        href="https://github.com/your-username/url-shortener"
-      >
-        View Source Code
-      </a>
+        </div>
+
+        {error && <p className="text-red-500 text-center">{error}</p>}
+
+        {shortenedUrl && (
+          <div className="p-4 space-y-3 bg-gray-100 rounded-lg">
+            <p className="font-medium text-gray-700">Your shortened URL:</p>
+            <div className="flex items-center space-x-2">
+              <a
+                href={shortenedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-grow text-blue-600 hover:underline truncate"
+              >
+                {shortenedUrl}
+              </a>
+              <button
+                className="px-3 py-1 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+                onClick={handleCopyToClipboard}
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+        )}
+
+        <footer className="text-center text-gray-500 text-sm">
+          <a
+            href="https://github.com/your-username/url-shortener"
+            className="hover:underline"
+          >
+            View Source on GitHub
+          </a>
+        </footer>
+      </div>
     </div>
-  )
+  );
 }

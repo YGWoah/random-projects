@@ -33,6 +33,5 @@ tokenRouter.get("/:url_key", (req, res) => {
 
 
 
-tokenRouter.use('/token', tokenRouter);
 
 export default tokenRouter;

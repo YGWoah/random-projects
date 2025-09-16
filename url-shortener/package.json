@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "build": "npm run build --prefix client",
+    "start": "node api/index.js",
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix api\""
+  }
+}
+
