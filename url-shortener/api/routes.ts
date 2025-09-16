@@ -1,5 +1,5 @@
 import express from 'express';
-import { getKey, saveKey } from './db';
+import { getKey, saveKey } from './db.js';
 const tokenRouter = express.Router();
 
 const generateKey = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

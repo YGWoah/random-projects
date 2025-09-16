@@ -1,8 +1,8 @@
-import tokenRouter from "./routes";
+import tokenRouter from "./routes.js";
 import type { Request, Response, NextFunction } from "express";
 
-const express = require("express");
-const bodyParser = require("body-parser");
+import express from "express";
+import bodyParser from "body-parser"
 
 
 const app = express();
