@@ -18,7 +18,8 @@ export default function App() {
 
     try {
       const response = await axios.post("/api/generate", { url });
-      setShortenedUrl(`http://localhost:3000/api/${response.data.id}`);
+setShortenedUrl(`${window.location.origin}/api/${response.data.id}`);
+
     } catch (err) {
       setError("Failed to shorten URL. Please try again.");
     } finally {
