@@ -1,6 +1,7 @@
 {
   "scripts": {
     "build": "npm run build --prefix client && npm run build --prefix api",
+    "build-vercel":"npm run build --prefix api",
     "start": "node api/dist/index.js",
     "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix api\""
   }
