@@ -1,0 +1,85 @@
+<html>
+
+<head></head>
+
+<body>
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="Enter message" autocomplete="off">
+        <button type="submit">Send</button>
+    </form>
+    <ul id="messages"></ul>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const log = console.log
+        const socket = io();
+        const id = generateId();
+        log(id)
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            sendFirstConnection();
+        });
+        socket.on('newMessage', (message) => {
+            const li = document.createElement('li');
+            li.textContent = `${message.from}: ${message.text}`;
+            document.getElementById('messages').appendChild(li);
+
+        });
+        socket.on('send-numbers', (message) => {
+            console.log(message);
+
+            if (message.id != id) return
+            let a = message.numbers.a
+            let b = message.numbers.b
+            let c = message.numbers.c
+            let result = {
+                a: false,
+                b: false,
+                c: false
+            }
+            result.a = [a, calculateIsPrime(a)]
+            result.b = [b, calculateIsPrime(b)]
+            result.c = [c, calculateIsPrime(c)]
+
+            sendResult(result)
+        })
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
+
+        const sendFirstConnection = () => {
+            socket.emit("first-connection", {
+                id: id,
+                createdAt: Date.now()
+            })
+        }
+
+
+
+        const calculateIsPrime = (num) => {
+            if (num <= 1) return false; // 0, 1, negatives are not prime
+            if (num <= 3) return true;  // 2 and 3 are prime
+            if (num % 2 === 0 || num % 3 === 0) return false; // divisible by 2 or 3
+
+            // check divisibility up to sqrt(num)
+            for (let i = 5; i * i <= num; i += 6) {
+                if (num % i === 0 || num % (i + 2) === 0) return false;
+            }
+            return true;
+        };
+
+
+        const sendResult = (result) => {
+            socket.emit("result", {
+                id: id,
+                result
+            })
+        }
+
+        function generateId() {
+            return "id-" + Math.random().toString(36).substr(2, 9);
+        }
+    </script>
+</body>
+
+</html>
