@@ -28,6 +28,12 @@ app.get("/count", (_, res) => {
     res.json(count)
 })
 
+
+app.get("/lastPrimes", (_, res) => {
+    const lastPrimes = primes.slice(-10);
+    res.json(lastPrimes);
+})
+
 app.get("/primes", (_, res) => {
     res.json(primes)
 })
@@ -39,7 +45,7 @@ io.on(ConnectionTypes.CONNECTION, (socket) => {
 
     socket.on(ConnectionTypes.FIRST_CONNECTION, (message: UserMessage) => {
         console.log(message);
-        
+
         if (message.id)
             ids.push(message.id);
         sendNumbers(socket, count++, count++, count++, message.id)
@@ -49,11 +55,9 @@ io.on(ConnectionTypes.CONNECTION, (socket) => {
         console.log('User disconnected');
     });
     socket.on(ConnectionTypes.RESULT, (message: ResultMessage) => {
-        log("result")
-        if(message.result.a[1])primes.push(message.result.a[0])
-        if(message.result.b[1])primes.push(message.result.b[0])
-        if(message.result.c[1])primes.push(message.result.c[0])
-        console.log(message);
+        if (message.result.a[1]) primes.push(message.result.a[0])
+        if (message.result.b[1]) primes.push(message.result.b[0])
+        if (message.result.c[1]) primes.push(message.result.c[0])
         sendNumbers(socket, count++, count++, count++, message.id)
 
 
