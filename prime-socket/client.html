@@ -20,7 +20,8 @@
         });
         socket.on('newMessage', (message) => {
             const li = document.createElement('li');
-            li.textContent = `${message.from}: ${message.text}`;
+            const time = message.createdAt ? new Date(message.createdAt).toISOString() : ''
+            li.textContent = `${message.from}: ${message.text} ${time}`;
             document.getElementById('messages').appendChild(li);
 
         });
@@ -40,6 +41,16 @@
             result.b = [b, calculateIsPrime(b)]
             result.c = [c, calculateIsPrime(c)]
 
+            // show the numbers and their primality in the UI
+            const ul = document.getElementById('messages')
+            const info = document.createElement('li')
+            info.textContent = `Numbers received: a=${a}, b=${b}, c=${c}`
+            ul.appendChild(info)
+
+            const resItem = document.createElement('li')
+            resItem.textContent = `Results: a=${result.a[0]} isPrime=${result.a[1]}, b=${result.b[0]} isPrime=${result.b[1]}, c=${result.c[0]} isPrime=${result.c[1]}`
+            ul.appendChild(resItem)
+
             sendResult(result)
         })
 
@@ -50,7 +61,7 @@
         const sendFirstConnection = () => {
             socket.emit("first-connection", {
                 id: id,
-                createdAt: Date.now()
+                createdAt: Date.now() // using numeric timestamp
             })
         }
 

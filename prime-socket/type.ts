@@ -1,6 +1,7 @@
 export interface UserMessage {
     id: string,
-    createdAt: Date
+    // client sends a numeric timestamp (Date.now())
+    createdAt: number
 }
 
 
